@@ -1,0 +1,36 @@
+from os import rename, chmod
+from shutil import copytree, rmtree
+from stat import S_IWRITE
+
+"""
+	Script copys Dropbox folder to an external hard drive
+	NOTE: Path to HDD is hardcoded in. If it's changed, or
+	if another HDD is intended to be the destination then
+	another path must be put in instead
+	NOTE: Can take some time depending on how much data is
+	is stored on Dropbox
+"""
+
+drop_box_path = "C:/Path/to/dropbox_folder"
+temp_dropbox_path = "F:/temporaryDropboxSave"
+hard_drive_path = "F:/Dropbox"
+
+print("Start")
+try:
+	copytree(drop_box_path, temp_dropbox_path)
+except FileNotFoundError:
+	raise Exception("Couldn't copy the trees")
+# remove the old HDD backup tree if it exists
+try:
+	# need to change to writeable
+	chmod(hard_drive_path, S_IWRITE)
+	rmtree(hard_drive_path)
+except FileNotFoundError:
+	print("Couldn't remove the backup tree")
+# then rename the temporary tree as the real tree
+try:
+	rename(temp_dropbox_path, hard_drive_path)
+except FileNotFoundError:
+	raise Exception("Couldn't rename the tree")
+
+print("Finished")
